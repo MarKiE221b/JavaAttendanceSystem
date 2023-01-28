@@ -1,4 +1,5 @@
 
+import com.formdev.flatlaf.intellijthemes.*;
 import com.github.sarxos.webcam.*;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.LuminanceSource;
@@ -20,6 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Timer;
 import java.sql.*;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -33,6 +35,7 @@ import javax.swing.table.DefaultTableModel;
  * @author SPRITE
  */
 public class main extends javax.swing.JFrame implements Runnable,ThreadFactory{
+    ImageIcon logo = new ImageIcon(getClass().getClassLoader().getResource("attend.png"));
     
     private WebcamPanel panel = null;
     private Webcam webcam = null;
@@ -45,12 +48,13 @@ public class main extends javax.swing.JFrame implements Runnable,ThreadFactory{
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
    
     popup pop = new popup();
-    
+        
     /**
      * Creates new form main
      */
     public main() {
         initComponents();
+        currentTimeInit();
         initWebcam();
     }
 
@@ -83,6 +87,8 @@ public class main extends javax.swing.JFrame implements Runnable,ThreadFactory{
         evtDate = new com.toedter.calendar.JDateChooser();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Attendance System");
+        setIconImage(logo.getImage());
         setResizable(false);
 
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -121,7 +127,7 @@ public class main extends javax.swing.JFrame implements Runnable,ThreadFactory{
         });
         jPanel1.add(eventSelector, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 40, 160, -1));
 
-        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Event Entries"));
+        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Set event"));
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
         jPanel4.add(eventIDEntry, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 40, 220, -1));
 
@@ -177,50 +183,34 @@ public class main extends javax.swing.JFrame implements Runnable,ThreadFactory{
 
     private void eventSubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eventSubmitActionPerformed
         String evt_ID = eventIDEntry.getText();
-        String evt_Name = eventNameEntry1.getText();;
+        String evt_Name = eventNameEntry1.getText();
+        
+        if(!evt_ID.isBlank() && !evt_Name.isBlank()){
+            try{
+                conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/attendancesystem","root", "");
 
-        try{
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/attendancesystem","root", "");
+                String insertQuery = "INSERT INTO event(event_ID, event_Name) VALUES (?,?)";
+                pst = conn.prepareStatement(insertQuery);
+                pst.setString(1, evt_ID);
+                pst.setString(2, evt_Name);
 
-            String insertQuery = "INSERT INTO event(event_ID, event_Name) VALUES (?,?)";
-            pst = conn.prepareStatement(insertQuery);
-            pst.setString(1, evt_ID);
-            pst.setString(2, evt_Name);
+                pst.execute();
 
-            pst.execute();
+                conn.close();
+            }catch(SQLException ex){
+                System.out.print(ex);
+            }
+            eventIDEntry.setText("");
+            eventNameEntry1.setText("");
 
-            conn.close();
-        }catch(SQLException ex){
-            System.out.print(ex);
-        }
-        eventIDEntry.setText("");
-        eventNameEntry1.setText("");
+            JOptionPane.showMessageDialog(null, "SUCCESSFULLY ADDED!", "CAUTION!", JOptionPane.INFORMATION_MESSAGE);
 
-        JOptionPane.showMessageDialog(null, "Successfully Added!", "Added", JOptionPane.INFORMATION_MESSAGE);
-
-        addValueToComboBox();
+            addValueToComboBox();
+        }else{
+            JOptionPane.showMessageDialog(null, "EMPTY VALUES PLEASE ADD!", "ADDED!", JOptionPane.WARNING_MESSAGE);
+        }   
     }//GEN-LAST:event_eventSubmitActionPerformed
 
-    private void addValueToComboBox(){
-        try{
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/attendancesystem","root", "");
-            Statement stmt = conn.createStatement();
-            
-            String getQuery = "SELECT * FROM event;";
-            rs = stmt.executeQuery(getQuery);
-            
-            eventSelector.removeAllItems();
-            
-            while(rs.next()){
-                String dataRow = rs.getString("event_ID");
-                eventSelector.addItem(dataRow);
-            }
-            conn.close();
-        }catch(SQLException ex){
-            System.out.println(ex);
-        }
-    }
-    
     /**
      * @param args the command line arguments
      */
@@ -231,24 +221,10 @@ public class main extends javax.swing.JFrame implements Runnable,ThreadFactory{
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            FlatGrayIJTheme.setup();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        //</editor-fold>
-        
-        /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new main().setVisible(true);
@@ -258,7 +234,7 @@ public class main extends javax.swing.JFrame implements Runnable,ThreadFactory{
     
     private void initWebcam(){
         Dimension size = WebcamResolution.QVGA.getSize();
-        webcam = Webcam.getWebcams().get(0);
+        webcam = Webcam.getWebcams().get(1);
         webcam.setViewSize(size);
         
         panel = new WebcamPanel(webcam);
@@ -337,7 +313,7 @@ public class main extends javax.swing.JFrame implements Runnable,ThreadFactory{
             pst.setString(2, eventSelector.getSelectedItem().toString());
             pst.setString(3, rs_field.getText());
             pst.setString(4, dateVar);
-            pst.execute();
+            pst.executeUpdate();
 
             conn.close();
         } catch (SQLException e) {
@@ -379,6 +355,31 @@ public class main extends javax.swing.JFrame implements Runnable,ThreadFactory{
         }
     }
     
+    private void currentTimeInit(){
+        evtDate.getJCalendar().setMinSelectableDate(new Date());
+        evtDate.setDate(new Date());
+    }
+    
+    private void addValueToComboBox(){
+        try{
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/attendancesystem","root", "");
+            Statement stmt = conn.createStatement();
+            
+            String getQuery = "SELECT * FROM event;";
+            rs = stmt.executeQuery(getQuery);
+            
+            eventSelector.removeAllItems();
+            
+            while(rs.next()){
+                String dataRow = rs.getString("event_ID");
+                eventSelector.addItem(dataRow);
+            }
+            conn.close();
+        }catch(SQLException ex){
+            System.out.println(ex);
+        }
+    }
+    
     //timer
     Timer t;
     SimpleDateFormat st;
@@ -397,7 +398,6 @@ public class main extends javax.swing.JFrame implements Runnable,ThreadFactory{
         });
         t.start();
     }
-    
     
     @Override
     public void run(){
