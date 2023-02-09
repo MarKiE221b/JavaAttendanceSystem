@@ -46,12 +46,8 @@ public class main extends javax.swing.JFrame implements Runnable,ThreadFactory{
     ResultSet rs;
     
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
-<<<<<<< HEAD
     DefaultTableModel model;
     
-=======
-   
->>>>>>> 878534cee27c5716075a4402950eff2a2fcf74f6
     popup pop = new popup();
         
     /**
@@ -60,11 +56,7 @@ public class main extends javax.swing.JFrame implements Runnable,ThreadFactory{
     public main() {
         initComponents();
         currentTimeInit();
-<<<<<<< HEAD
         time();
-=======
-        initWebcam();
->>>>>>> 878534cee27c5716075a4402950eff2a2fcf74f6
     }
 
     /**
@@ -250,7 +242,6 @@ public class main extends javax.swing.JFrame implements Runnable,ThreadFactory{
         
         if(!evt_ID.isBlank() && !evt_Name.isBlank()){
             try{
-<<<<<<< HEAD
                 String insertQuery = "INSERT INTO event(event_ID, event_Name) VALUES (?,?)";
                 pst = conn.prepareStatement(insertQuery);
                 pst.setString(1, evt_ID);
@@ -301,32 +292,6 @@ public class main extends javax.swing.JFrame implements Runnable,ThreadFactory{
         
     }//GEN-LAST:event_closeConnectDbsActionPerformed
 
-=======
-                conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/attendancesystem","root", "");
-
-                String insertQuery = "INSERT INTO event(event_ID, event_Name) VALUES (?,?)";
-                pst = conn.prepareStatement(insertQuery);
-                pst.setString(1, evt_ID);
-                pst.setString(2, evt_Name);
-
-                pst.execute();
-
-                conn.close();
-            }catch(SQLException ex){
-                System.out.print(ex);
-            }
-            eventIDEntry.setText("");
-            eventNameEntry1.setText("");
-
-            JOptionPane.showMessageDialog(null, "SUCCESSFULLY ADDED!", "CAUTION!", JOptionPane.INFORMATION_MESSAGE);
-
-            addValueToComboBox();
-        }else{
-            JOptionPane.showMessageDialog(null, "EMPTY VALUES PLEASE ADD!", "ADDED!", JOptionPane.WARNING_MESSAGE);
-        }   
-    }//GEN-LAST:event_eventSubmitActionPerformed
-
->>>>>>> 878534cee27c5716075a4402950eff2a2fcf74f6
     /**
      * @param args the command line arguments
      */
@@ -339,18 +304,9 @@ public class main extends javax.swing.JFrame implements Runnable,ThreadFactory{
         try {
             FlatGrayIJTheme.setup();
         } catch (Exception e) {
-<<<<<<< HEAD
         }
         java.awt.EventQueue.invokeLater(() -> {
             new main().setVisible(true);
-=======
-            e.printStackTrace();
-        }
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new main().setVisible(true);
-            }
->>>>>>> 878534cee27c5716075a4402950eff2a2fcf74f6
         });
     }
     
@@ -434,11 +390,6 @@ public class main extends javax.swing.JFrame implements Runnable,ThreadFactory{
             pst.setString(3, rs_field.getText());
             pst.setString(4, dateVar);
             pst.executeUpdate();
-<<<<<<< HEAD
-=======
-
-            conn.close();
->>>>>>> 878534cee27c5716075a4402950eff2a2fcf74f6
         } catch (SQLException e) {
 
         }
@@ -486,10 +437,6 @@ public class main extends javax.swing.JFrame implements Runnable,ThreadFactory{
     
     private void addValueToComboBox(){
         try{
-<<<<<<< HEAD
-=======
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/attendancesystem","root", "");
->>>>>>> 878534cee27c5716075a4402950eff2a2fcf74f6
             Statement stmt = conn.createStatement();
             
             String getQuery = "SELECT * FROM event;";
@@ -501,10 +448,6 @@ public class main extends javax.swing.JFrame implements Runnable,ThreadFactory{
                 String dataRow = rs.getString("event_ID");
                 eventSelector.addItem(dataRow);
             }
-<<<<<<< HEAD
-=======
-            conn.close();
->>>>>>> 878534cee27c5716075a4402950eff2a2fcf74f6
         }catch(SQLException ex){
             System.out.println(ex);
         }
